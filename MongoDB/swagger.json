@@ -1,0 +1,135 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Module Development",
+        "description": "API description for bbfitness.",
+        "version": "1.0.0",
+        "contact": {
+            "email": ""
+        }
+    },
+    "host": "localhost:9099",
+    "basePath": "",
+    "schemes": [
+        "http"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/user/login": {
+            "post": {
+                "tags": [
+                    "users"
+                ],
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "body",
+                        "description": "email of user",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "phoneNumber",
+                        "in": "body",
+                        "description": "phoneNumber of the user",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "password",
+                        "in": "body",
+                        "description": "The password of the user",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "loginType",
+                        "in": "body",
+                        "description": "The loginType of the user",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "socialAuthKey",
+                        "in": "body",
+                        "description": "The socialAuthKey of the social login",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "appId",
+                        "in": "body",
+                        "description": "The appId of the application",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "deviceId",
+                        "in": "body",
+                        "description": "deviceId",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "deviceType",
+                        "in": "body",
+                        "description": "deviceType",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "appVersion",
+                        "in": "body",
+                        "description": "appVersion",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "summary": "Returns login Sucess or failed",
+                "description": " User able to login with gmail or by using mobile.",
+                "responses": {
+                    "200": {
+                        "description": " OK"
+                    },
+                    "400": {
+                        "description": " FAILURE"
+                    }
+                }
+            }
+        },
+        "/user/userProfile": {
+            "get": {
+                "tags": [
+                    "users"
+                ],
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "query",
+                        "description": "userId of the user",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "summary": "Returns user details.",
+                "description": "returns user profile details and subscrption details",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    },
+                    "400": {
+                        "description": "Failure"
+                    },
+                    "401": {
+                        "description": "Error"
+                    }
+                }
+            }
+        }
+    }
+}
