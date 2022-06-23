@@ -1,11 +1,9 @@
 var mongoose = require('mongoose')
 mongoose.Promise = global.Promise
-var environment = require('../environment')
 require('dotenv').config()
-var envType = process.env.APP_ENVIRONMENT
-console.log(process.env.PORT)
+//var envType = qa
 
-mongoose.connect(environment[envType].databaseurl, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false })
+mongoose.connect('mongodb+srv://nani_kandukuri:0wpb09h3eHnjpetu@cluster0.q6vvk.mongodb.net/?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false })
 var db = mongoose.connection
 
 var server;
@@ -17,7 +15,7 @@ db.once('open', function () {
     /**
      * Get port from environment and store in Express.
      */
-    var port = normalizePort(process.env.PORT) || 8080;
+    var port = normalizePort(process.env.PORT) || 9099;
     app.set('port', port)
     /**
   * Create HTTP server.

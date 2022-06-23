@@ -9,7 +9,7 @@ var numCPUs = require('os').cpus().length
 var dotenv = require('dotenv')
 dotenv.config();
 
-var envVar = process.env.APP_ENVIRONMENT
+var envVar = 'qa'
 if (!envVar && cluster.isMaster) {
   logger.debug(`Master ${process.pid} is running`)
   for (var i = 0; i < numCPUs; i++) {
