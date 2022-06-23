@@ -33,7 +33,7 @@ const verifyOTP = ((req, res) => {
                 } else if (data[0]) {
                     if (new Date() > data[0].expiryDateTime) {
                         logger.info("OTP has been expired")
-                        res.status(201).json(Utils.getErrorResponse({}, MSG_OTP_EXPIRED, CONSTANTS.MSG_FAILURE))
+                        res.status(201).json(Utils.getErrorResponse({}, CONSTANTS.MSG_OTP_EXPIRED, CONSTANTS.MSG_FAILURE))
                     } else if (data[0].OTP === parseInt(input.OTP)) {
                         verificationModel.findOneAndUpdate({ _id: data[0]._id, verificationStatus: false }, {
                             $set: {
