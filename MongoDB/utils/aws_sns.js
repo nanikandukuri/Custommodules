@@ -1,11 +1,13 @@
 var AWS = require('aws-sdk');
 var environment = require('../environment')
 require('dotenv').config()
-// AWS.config.access_Key_id = 'AKIA4RJ3O4EKVZIGWKP3'
-// AWS.config.Access_Key = 'xCSBZy2t9BroIWTVDUAcg23PRYH1kjbuirQ5MteL'
+AWS.config.access_Key_id = 'AKIA4RJ3O4EKVZIGWKP3'
+AWS.config.Access_Key = 'xCSBZy2t9BroIWTVDUAcg23PRYH1kjbuirQ5MteL'
 
-AWS.config.access_Key_id = environment[`${process.env.APP_ENVIRONMENT}`].accessKeyId
-AWS.config.Access_Key = environment[`${process.env.APP_ENVIRONMENT}`].secretAccessKey
+
+
+// AWS.config.access_Key_id = environment[`${process.env.APP_ENVIRONMENT}`].accessKeyId
+// AWS.config.Access_Key = environment[`${process.env.APP_ENVIRONMENT}`].secretAccessKey
 AWS.config.region = 'ap-south-1'
 
 

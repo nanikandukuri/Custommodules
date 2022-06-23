@@ -1,9 +1,8 @@
-const AWS = require('aws-sdk'),
-    environment = require('../environment')
+const AWS = require('aws-sdk');
 
 AWS.config.update({
-    accessKeyId: environment[`${process.env.APP_ENVIRONMENT}`].accessKeyId,
-    secretAccessKey: environment[`${process.env.APP_ENVIRONMENT}`].secretAccessKey
+    accessKeyId: 'AKIA4RJ3O4EKVZIGWKP3',
+    secretAccessKey: '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'
 })
 
 const S3 = new AWS.S3();
