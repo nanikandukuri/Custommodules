@@ -1,18 +1,27 @@
-const { ObjectId } = require('bson')
 
-var express = require('express'),
-    user = require('../../users/models/userProfile'),
-    Utils = require('../../../utils/utils')
-CONSTANTS = require('../../../utils/Constants'),
-    logger = require('../../../logger')
-    , crypto = require('crypto')
-    , { v4: uuidv4 } = require('uuid')
+/**
+ * @author Nani Kandukuri
+ *
+ */
+let user = require('../../users/models/userProfile'),
+    Utils = require('../../../utils/utils'),
+    CONSTANTS = require('../../../utils/Constants'),
+    logger = require('../../../logger'),
+    crypto = require('crypto'),
+    { v4: uuidv4 } = require('uuid');
 
+
+/**
+* @description The function used to update the user  password after successfull verification
+* @param {object} req 
+* @param {object} res 
+* @returns {object}
+*/
 const resetPassword = ((req, res) => {
-    var input = req.body
-    logger.info("reset Password" + input.email)
+    let input = req.body;
+    logger.info("reset Password" + " ::: " + input.value);
     let response = { code: 1, msg: '' }
-    checkValidations(response, input)
+    restpasswordValidationsHandler(response, input);
     if (response.code == 1) {
         let query = {}
         if (input.type === "email") {
@@ -43,7 +52,7 @@ const resetPassword = ((req, res) => {
             } else if (passwordData.length) {
                 let passwordFields = passwordData[0].password.split('$');
                 let salt = passwordFields[0];
-                let hash = crypto.createHmac('sha512', salt).update(req.body.password).digest("base64")
+                let hash = crypto.createHmac('sha512', salt).update(req.body.password).digest("base64");
                 if (hash === passwordFields[1]) {
                     res.status(400).json(Utils.getErrorResponse({}, "New password cannot be smae as previous password", 0))
                 } else {
@@ -69,7 +78,7 @@ const resetPassword = ((req, res) => {
             }
         })
     } else {
-        res.status(401).json(response)
+        res.status(401).json(response);
     }
 })
 
@@ -82,8 +91,14 @@ var createHash = (newPassword) => {
     newPassword = salt + "$" + hash;
     return newPassword
 }
-
-function checkValidations(response, input) {
+/**
+* 
+* @description Function to validate the reset Password Api Input Request
+* @param {object} response 
+* @param {object} input 
+* @returns {object}
+*/
+function restpasswordValidationsHandler(response, input) {
 
     if (Utils.isStringBlank(input.type)) {
         response.code = 0;
@@ -100,7 +115,6 @@ function checkValidations(response, input) {
     } else {
         return response;
     }
-
 }
 
 

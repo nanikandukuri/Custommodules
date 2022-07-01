@@ -3,12 +3,13 @@ require('express');
 var loginController = require('./controllers/login');
 var signupController = require('./controllers/userSignup');
 var otpController = require('./controllers/sendOTP');
-var verifyotpController = require('./controllers/verifyOTP')
+var verifyotpController = require('./controllers/verifyOTP');
+var deleteUserController = require('./controllers/deleteUser');
 var resetpasswordController = require('./controllers/resetpassword')
     , url = require('url')
     , publicIp = require('public-ip')
-    , auth = require('../../security/Auth')
-    , { RateLimiterMemory } = require('rate-limiter-flexible');
+    , { RateLimiterMemory } = require('rate-limiter-flexible'),
+    auth = require('../../utils/Auth');
 
 let rateLimiter = new RateLimiterMemory(
     {
@@ -35,11 +36,12 @@ let LoginrateLimiter = (req, res, next) => {
             }
         });
 };
-router.post('/login', loginController.userLogin);
-router.post('/signup', signupController.userSignup);
-router.post('/sendOTP', otpController.sendOTP);
-router.post('/verifyOTP', verifyotpController.verifyOTP);
-router.post('/resetPassword', resetpasswordController.resetPassword);
+router.post('/login', auth.verifyHash(), loginController.userLogin);
+router.post('/signup', auth.verifyHash(), signupController.userSignup);
+router.post('/sendOTP', auth.verifyHash(), otpController.sendOTP);
+router.post('/verifyOTP', auth.verifyHash(), verifyotpController.verifyOTP);
+router.post('/resetPassword', auth.verifyHash(), resetpasswordController.resetPassword);
+router.post('/deleteUser', auth.verifyHash(), deleteUserController.deleteUser);
 
 
 

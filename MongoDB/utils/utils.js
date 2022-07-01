@@ -59,10 +59,8 @@ var utils = {
         else return true;
     },
     isValidPhoneNumber: function (value) {
-        var reg = /^([0|\+[0-9]{1,5})?([7-9][0-9]{9})$/;
-        if (!(reg.test(value)))
-            return false
-        else return true;
+        var re = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
+        return re.test(value);
     },
     convert: function (d) {
 
@@ -106,6 +104,17 @@ var utils = {
         } else {
             return false
         }
+    },
+    // generating OTP bases on Type and Size
+    generateOTP(type, length) {
+        var digits = (type == 'alphanumeric') ? '0123456789abcdefghijklmnopqrstuvwxyz' : "123456789";
+        var otpLength = length;
+        var otp = '';
+        for (let i = 1; i <= otpLength; i++) {
+            var index = Math.floor(Math.random() * (digits.length));
+            otp = otp + digits[index];
+        }
+        return otp;
     },
     GetFormattedDate: function () {
         var todayTime = new Date();

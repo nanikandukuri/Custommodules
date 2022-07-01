@@ -1,19 +1,26 @@
-
+/**
+ * @author Nani Kandukuri
+ *
+ */
 var userSignUp = require('../../users/models/userProfile'),
-    bcrypt = require('bcrypt-nodejs'),
     Utils = require('../../../utils/utils'),
     CONSTANTS = require('../../../utils/Constants'),
     logger = require('../../../logger'),
     crypto = require('crypto'),
     { v4: uuidv4 } = require('uuid');
-// meaning full comments
-// better to maintain semicolon at end of statements
-// meaning full function name for validating functions
+
+/**
+* @description userSignup function handles the registration process of the user.
+creating the new user with the input details and saving password in hash code
+* @param {object} req 
+* @param {object} res 
+* @returns {object}
+*/
 const userSignup = ((req, res) => {
     let input = req.body;
     let response = { code: 1, msg: '' }
-    checkValidations(response, input) //checking for valid data
-    logger.info('userSignUp API email:-' + input.email + input.phoneNumber)
+    signupValidationHandler(response, input) //checking for valid data
+    logger.info('userSignUp API email:-' + " ::: " + input.email + input.phoneNumber)
     if (response.code == 1) {
         var query = {}
         if (input.email || input.phoneNumber) {
@@ -41,7 +48,7 @@ const userSignup = ((req, res) => {
                     let isEmailVerified;
                     let isMobileNumberVerified;
                     let existType;
-                    if (userVerification.email != input.email) {
+                    if (userVerification.email == input.email) {
                         isEmailVerified = false
                         existType = CONSTANTS.EMAIL
                     } else {
@@ -98,7 +105,7 @@ var createHash = (password) => {
 * @param {object} input 
 * @returns {object}
 */
-function checkValidations(response, input) {
+function signupValidationHandler(response, input) {
 
     if (Utils.isStringBlank(input.fullName)) {
         response.code = 0;
@@ -124,7 +131,7 @@ function checkValidations(response, input) {
     } else if (Utils.isStringBlank(input.phoneNumber)) {
         response.code = 0;
         response.msg = 'phoneNumber cannot be empty'
-    } else if (input.phoneNumber && !Utils.isValidPhoneNumber(input.phoneNumber)) {
+    } else if (!Utils.isValidPhoneNumber(input.phoneNumber)) {
         response.code = 0;
         response.msg = 'Invalid phoneNumber'
     } else if (input.password && !Utils.ValidatePassword(input.password)) {

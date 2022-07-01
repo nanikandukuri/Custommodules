@@ -1,25 +1,34 @@
-var express = require('express'),
-    router = express(),
-    UserSignUp = require('../../users/models/userProfile'),
+/**
+ * @author Nani Kandukuri
+ *
+ */
+
+let UserSignUp = require('../../users/models/userProfile'),
     Utils = require('../../../utils/utils'),
     CONSTANTS = require('../../../utils/Constants'),
     verificationModel = require('../../users/models/otpAuthorization'),
-    logger = require('../../../logger'),
-    ObjectId = require('mongodb').ObjectID;
+    logger = require('../../../logger');
 
-const verifyOTP = ((req, res) => {
-    var input = req.body
-    var response = { code: CONSTANTS.CODE_SUCCESS, msg: CONSTANTS.MSG_SUCCESS }
-    vaidateData(input, response)
+/**
+* @description the function validates the OTP entered by the user and enables the verifaction status after successfull verification.
+* @param {object} req 
+* @param {object} res 
+* @returns {object}
+*/
+const verifyOTP = (async (req, res) => {
+    let input = req.body
+    let response = { code: CONSTANTS.CODE_SUCCESS, msg: CONSTANTS.MSG_SUCCESS }
+    logger.info("Verify OTP" + " ::: " + input.value);
+    verifyOTPValidationsHandler(input, response);
     if (response.code == 1) {
-        var query = {}
-        var email;
-        var phoneNumber;
+        let query = {}
+        let email;
+        let phoneNumber;
         if (input.type === CONSTANTS.EMAIL) {
-            email = input.value
+            email = input.value;
             query = { email: { $eq: input.value } }
         } else if (input.type === CONSTANTS.PHONENUMBER) {
-            phoneNumber = input.value
+            phoneNumber = input.value;
             query = { phoneNumber: { $eq: input.value } }
         }
         verificationModel.find(query)
@@ -28,11 +37,11 @@ const verifyOTP = ((req, res) => {
                     logger.error(CONSTANTS.MSG_FIND_OTP_ERROR, err)
                     res.status(400).json(Utils.getErrorResponse({}, CONSTANTS.MSG_FIND_OTP_ERROR, CONSTANTS.MSG_FAILURE))
                 } else if (!data) {
-                    logger.info("No OTP data for verfication")
+                    logger.info("No OTP data for verfication");
                     res.status(404).json(Utils.getSuccessResponse({}, CONSTANTS.MSG_NO_OTP_DATA, CONSTANTS.MSG_FAILURE))
                 } else if (data[0]) {
                     if (new Date() > data[0].expiryDateTime) {
-                        logger.info("OTP has been expired")
+                        logger.info("OTP has been expired");
                         res.status(201).json(Utils.getErrorResponse({}, CONSTANTS.MSG_OTP_EXPIRED, CONSTANTS.MSG_FAILURE))
                     } else if (data[0].OTP === parseInt(input.OTP)) {
                         verificationModel.findOneAndUpdate({ _id: data[0]._id, verificationStatus: false }, {
@@ -50,69 +59,43 @@ const verifyOTP = ((req, res) => {
                                 res.status(400).json(Utils.getErrorResponse({}, "No otp data to update verfication status", 0))
                                 return;
                             } else {
-                                if (input.requestType == "signup") {
-                                    let query;
-                                    let cond;
-                                    if (email) {
-                                        query = { email: { $in: email } }
-                                        cond = {
-                                            $set: {
-                                                isEmailVerified: true,
-                                                updateDateTime: new Date()
-                                            }
+                                let query;
+                                let cond;
+                                if (email) {
+                                    query = { email: { $eq: email } }
+                                    cond = {
+                                        $set: {
+                                            isEmailVerified: true,
+                                            updateDateTime: new Date()
                                         }
                                     }
-                                    if (phoneNumber) {
-                                        query = { phoneNumber: { $in: phoneNumber } }
-                                        cond = {
-                                            $set: {
-                                                isMobileNumberVerified: true,
-                                                updateDateTime: new Date()
-                                            }
-                                        }
-                                    }
-
-                                    UserSignUp.updateOne(query, cond, { new: true }).select('-appId -deviceId -deviceType -appVersion -password -tokens -updateDateTime -createdDateTime -referralIds').exec(async (err, data) => {
-                                        if (err) {
-                                            logger.error('Error updating email verfication status in userprofile')
-                                            res.status(201).json(Utils.getErrorResponse({}, 'Error in verfication of email', 0))
-                                            return false;
-                                        } else if (!data) {
-                                            logger.info('No user data to update verfication status')
-                                            res.status(200).json(Utils.getSuccessResponse({}, "No data for verfication", 1));
-                                            return false;
-                                        } else {
-                                            let userId = data._id
-                                            let isEmailVerified = data.isEmailVerified
-                                            let isMobileNumberVerified = data.isMobileNumberVerified
-                                            res.status(200).json(Utils.getSuccessResponse({ userId, isEmailVerified, isMobileNumberVerified }, "Verified successfully", 1))
-                                        }
-                                    })
-                                } else {
-                                    let query;
-                                    if (email) {
-                                        query = { email: { $eq: email } }
-                                    }
-                                    if (phoneNumber) {
-                                        query = { phoneNumber: { $eq: phoneNumber } }
-                                    }
-                                    UserSignUp.find(query).select('-appId -deviceId -deviceType -appVersion -password -tokens -updateDateTime -createdDateTime -referralIds').exec(async (err, data) => {
-                                        if (err) {
-                                            logger.error('Error updating email verfication status in userprofile')
-                                            res.status(201).json(Utils.getErrorResponse({}, 'Error in verfication of email', 0))
-                                            return false;
-                                        } else if (!data.length) {
-                                            logger.info('No user data to update verfication status')
-                                            res.status(200).json(Utils.getSuccessResponse({}, "No data for verfication", 0));
-                                            return false;
-                                        } else {
-                                            let userId = data[0]._id
-                                            let isEmailVerified = data[0].isEmailVerified
-                                            let isMobileNumberVerified = data[0].isMobileNumberVerified
-                                            res.status(200).json(Utils.getSuccessResponse({ userId, isEmailVerified, isMobileNumberVerified }, "Success", 1))
-                                        }
-                                    })
                                 }
+                                if (phoneNumber) {
+                                    query = { phoneNumber: { $eq: phoneNumber } }
+                                    cond = {
+                                        $set: {
+                                            isMobileNumberVerified: true,
+                                            updateDateTime: new Date()
+                                        }
+                                    }
+                                }
+
+                                UserSignUp.findOneAndUpdate(query, cond, { new: true }).select('-appId -deviceId -deviceType -appVersion -password -tokens -updateDateTime -createdDateTime -referralIds').exec((err, data) => {
+                                    if (err) {
+                                        logger.error('Error updating email verfication status in userprofile')
+                                        res.status(201).json(Utils.getErrorResponse({}, 'Error in verfication of email', 0))
+                                        return false;
+                                    } else if (!data) {
+                                        logger.info('No user data to update verfication status')
+                                        res.status(200).json(Utils.getSuccessResponse({}, "No data for verfication", 1));
+                                        return false;
+                                    } else {
+                                        let userId = data._id;
+                                        let isEmailVerified = data.isEmailVerified;
+                                        let isMobileNumberVerified = data.isMobileNumberVerified;
+                                        res.status(200).json(Utils.getSuccessResponse({ userId, isEmailVerified, isMobileNumberVerified }, "Verified successfully", 1));
+                                    }
+                                })
                             }
                         })
                     } else {
@@ -127,8 +110,14 @@ const verifyOTP = ((req, res) => {
     }
 })
 
-// handling validations
-let vaidateData = (input, response) => {
+/**
+* 
+* @description Function to validate the verifyOTP Api Input Request
+* @param {object} response 
+* @param {object} input 
+* @returns {object}
+*/
+let verifyOTPValidationsHandler = (input, response) => {
     if (Utils.isNull(input.OTP)) {
         response.code = 0;
         response.msg = 'OTP Cannot be empty or invalid OTP'
